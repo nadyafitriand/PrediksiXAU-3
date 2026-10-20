@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GoldVision — Gold Price Forecasting & Sentiment Analysis</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">◆</span>
+      <span class="brand-name">GOLDVISION</span>
+    </div>
+    <nav class="nav">
+      <button class="nav-btn active" data-target="dashboard">Dashboard</button>
+      <button class="nav-btn" data-target="forecast">Price Forecast</button>
+      <button class="nav-btn" data-target="sentiment">Sentiment Analysis</button>
+      <button class="nav-btn" data-target="news">Economic News</button>
+    </nav>
+    <span id="data-status-badge" class="badge badge-muted">memuat…</span>
+  </header>
+
+  <div id="demo-banner" class="demo-banner hidden">
+    DEMO / SIMULASI — backend tidak terhubung. Angka di halaman ini bukan hasil model.
+  </div>
+
+  <main>
+    <!-- ===================== DASHBOARD ===================== -->
+    <section class="page active" data-page="dashboard">
+      <h1>Dashboard</h1>
+      <p class="muted">Ringkasan harga emas (XAU/USD), prediksi, sentimen berita, dan indikasi keputusan.</p>
+                 <div class="card live-clock">
+        <div class="clock-time" id="live-time">--:--:-- WIB</div>
+        <div class="clock-date" id="live-date">—</div>
+        <div class="clock-note">Waktu sekarang (WIB). Harga dan prediksi mengikuti data historis, lihat tanggal data di kartu Harga Close Terakhir.</div>
+      </div>
+
+              <div class="kpi-grid">
+        <div class="card kpi">
+          <div class="kpi-label">Harga Close Terakhir</div>
+          <div class="kpi-value" id="kpi-current-price">—</div>
+          <div class="kpi-sub" id="kpi-current-date">—</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-label">Perubahan 1 Hari</div>
+          <div class="kpi-value" id="kpi-change-1d">—</div>
+          <div class="kpi-sub">Terhadap sesi sebelumnya</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-label">Prediksi ± 1 Bulan</div>
+          <div class="kpi-value" id="kpi-predicted-price">—</div>
+          <div class="kpi-sub"><span id="kpi-predicted-change">—</span> · <span id="kpi-target-date"></span></div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-label">Sentimen Berita (P / N / Neg)</div>
+          <div class="kpi-value small" id="kpi-sentiment-summary">—</div>
+          <div class="kpi-sub">Klasifikasi FinBERT</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-label">Inflasi CPI (YoY)</div>
+          <div class="kpi-value" id="kpi-cpi">—</div>
+          <div class="kpi-sub" id="kpi-cpi-sub">—</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Indikasi Keputusan</h3>
+          <div class="signal" id="recommendation-signal" data-signal="none">—</div>
+          <ul class="reasons" id="recommendation-reasons"></ul>
+          <p class="disclaimer">Indikasi berbasis aturan penelitian, bukan jaminan keuntungan atau nasihat investasi.</p>
+        </div>
+        <div class="card">
+          <h3>Harga Historis</h3>
+          <div class="chart-box"><canvas id="chart-dashboard-history"></canvas></div>
+        </div>
+      </div>
+
+      <p class="muted small" id="dashboard-messages"></p>
+    </section>
+
+    <!-- ===================== PRICE FORECAST ===================== -->
+    <section class="page" data-page="forecast">
+      <h1>Price Forecast</h1>
+      <p class="muted">Perbandingan harga aktual dengan prediksi XGBoost pada data uji (periode yang tidak dipakai melatih model).</p>
+
+      <div class="kpi-grid">
+        <div class="card kpi">
+          <div class="kpi-label">Prediksi Harga</div>
+          <div class="kpi-value" id="forecast-price">—</div>
+          <div class="kpi-sub" id="forecast-target">—</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-label">Perubahan Prediksi</div>
+          <div class="kpi-value" id="forecast-change">—</div>
+          <div class="kpi-sub" id="forecast-acuan">—</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-label">Akurasi Arah</div>
+          <div class="kpi-value" id="metric-direction">—</div>
+          <div class="kpi-sub">Proporsi prediksi arah naik/turun yang benar</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Aktual vs Prediksi (data uji)</h3>
+        <div class="chart-box tall"><canvas id="chart-forecast"></canvas></div>
+      </div>
+
+      <div class="card">
+        <h3>Metrik Evaluasi</h3>
+        <table class="table">
+          <thead>
+            <tr><th>Model</th><th>MAE</th><th>RMSE</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>XGBoost</td><td id="metric-mae-model">—</td><td id="metric-rmse-model">—</td></tr>
+            <tr><td>Baseline (harga terakhir)</td><td id="metric-mae-baseline">—</td><td id="metric-rmse-baseline">—</td></tr>
+          </tbody>
+        </table>
+        <p class="muted small" id="forecast-message"></p>
+      </div>
+    </section>
+
+    <!-- ===================== SENTIMENT ===================== -->
+    <section class="page" data-page="sentiment">
+      <h1>Sentiment Analysis</h1>
+      <p class="muted">Distribusi sentimen berita ekonomi Amerika Serikat hasil klasifikasi FinBERT.</p>
+
+      <div class="kpi-grid">
+        <div class="card kpi">
+          <div class="kpi-label">Positif</div>
+          <div class="kpi-value" id="sentiment-positive-pct">—</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-label">Netral</div>
+          <div class="kpi-value" id="sentiment-neutral-pct">—</div>
+        </div>
+        <div class="card kpi">
+          <div class="kpi-label">Negatif</div>
+          <div class="kpi-value" id="sentiment-negative-pct">—</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Distribusi</h3>
+          <div class="chart-box"><canvas id="chart-sentiment-doughnut"></canvas></div>
+        </div>
+        <div class="card">
+          <h3>Tren Harian</h3>
+          <div class="chart-box"><canvas id="chart-sentiment-trend"></canvas></div>
+        </div>
+      </div>
+      <p class="muted small" id="sentiment-message"></p>
+    </section>
+
+    <!-- ===================== NEWS ===================== -->
+    <section class="page" data-page="news">
+      <h1>Economic News</h1>
+      <p class="muted">Berita yang menjadi bahan analisis beserta hasil sentimennya.</p>
+
+      <div class="card">
+        <div class="filters">
+          <input type="search" id="news-search" placeholder="Cari judul atau sumber…" />
+          <select id="news-category"><option value="">Semua kategori</option></select>
+          <select id="news-sentiment">
+            <option value="">Semua sentimen</option>
+            <option value="positive">Positif</option>
+            <option value="neutral">Netral</option>
+            <option value="negative">Negatif</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Tanggal</th><th>Judul</th><th>Sumber</th>
+                <th>Kategori</th><th>Sentimen</th><th>Skor</th><th>Tautan</th>
+              </tr>
+            </thead>
+            <tbody id="news-table-body"></tbody>
+          </table>
+        </div>
+        <p class="muted small" id="news-count"></p>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="mock-data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
