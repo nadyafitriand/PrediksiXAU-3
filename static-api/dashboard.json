@@ -1,0 +1,54 @@
+{
+  "data_status": "ready",
+  "messages": [],
+  "price": {
+    "date": "2025-12-31",
+    "close": 4341.1,
+    "change_1d_percent": -1.03,
+    "data_rows": 1006
+  },
+  "prediction": {
+    "as_of_date": "2025-12-31",
+    "target_date": "2026-01-29",
+    "horizon_trading_days": 21,
+    "current_price": 4341.1,
+    "predicted_price": 4531.69,
+    "predicted_change_percent": 4.39
+  },
+  "sentiment": {
+    "total": 965,
+    "counts": {
+      "positive": 188,
+      "neutral": 377,
+      "negative": 400
+    },
+    "percent": {
+      "positive": 19.48,
+      "neutral": 39.07,
+      "negative": 41.45
+    }
+  },
+  "macro": {
+    "as_of_date": "2025-12-31",
+    "period": "2025-11",
+    "release_date": "2025-12-20",
+    "release_source": "estimasi_konservatif",
+    "cpi_index": 325.063,
+    "cpi_yoy_percent": 2.99
+  },
+  "recommendation": {
+    "rule_based": true,
+    "rules": {
+      "buy_threshold_pct": 2.0,
+      "sell_threshold_pct": -2.0,
+      "sentiment_conflict_share_pct": 50.0
+    },
+    "disclaimer": "Indikasi berbasis aturan penelitian, bukan jaminan keuntungan atau nasihat investasi.",
+    "signal": "Buy",
+    "reasons": [
+      "Prediksi perubahan +4.39% melampaui ambang Buy (2.0%).",
+      "Sentimen berita: positif 19.5%, netral 39.1%, negatif 41.5%; tidak mengubah sinyal."
+    ]
+  },
+  "static": true
+}
