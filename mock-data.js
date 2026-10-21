@@ -1,21 +1,25 @@
-/* DATA SIMULASI — hanya dipakai saat backend tidak terhubung.
-   Semua angka di file ini bukan hasil model dan selalu ditampilkan dengan label DEMO. */
+/* DATA SIMULASI, hanya dipakai saat backend tidak terhubung.
+   Angka di file ini bukan hasil model dan selalu ditampilkan dengan label DEMO.
+   Tanggal dibuat mundur dari 31 Desember 2025 agar sesuai rentang data asli. */
 (function () {
-  const dates = [];
+  const END = new Date(2025, 11, 31);
+  const days = [];
+  const cur = new Date(END);
+  while (days.length < 180) {
+    if (cur.getDay() !== 0 && cur.getDay() !== 6) days.unshift(new Date(cur));
+    cur.setDate(cur.getDate() - 1);
+  }
+
+  const fmt = (d) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+  const dates = days.map(fmt);
   const closes = [];
   let price = 4050;
-  const d = new Date("2026-04-01T00:00:00");
-
-  let i = 0;
-  while (closes.length < 180) {
-    if (d.getDay() !== 0 && d.getDay() !== 6) {
-      price += Math.sin(i / 9) * 12 + ((i * 37) % 11 - 5);
-      dates.push(d.toISOString().slice(0, 10));
-      closes.push(Math.round(price * 100) / 100);
-    }
-    d.setDate(d.getDate() + 1);
-    i++;
-  }
+  days.forEach((_, i) => {
+    price += Math.sin(i / 9) * 12 + ((i * 37) % 11 - 5);
+    closes.push(Math.round(price * 100) / 100);
+  });
 
   const last = closes[closes.length - 1];
   const prev = closes[closes.length - 2];
